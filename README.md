@@ -1,188 +1,311 @@
-# Meeting Minutes Agent API
+# 🚀 Meeting Minutes Agent
 
-A FastAPI server that combines audio transcription (using Hugging Face) and meeting minutes generation (using OpenAI Agent SDK).
+A full-stack AI-powered application that transforms meeting recordings into structured, actionable minutes. Built with **FastAPI backend** and **Next.js frontend**.
 
-## Features
+## ✨ Features
 
-- **Audio Transcription**: Upload audio files and get text transcripts
-- **Meeting Minutes Generation**: Generate structured meeting minutes from transcripts
-- **Combined Workflow**: Upload audio → Transcribe → Generate meeting minutes in one request
-- **Flexible API**: Use individual endpoints or combined workflow
-- **File Validation**: Supports multiple audio formats with size limits
-- **Environment-based Configuration**: Easy configuration via environment variables
+- **🎵 Audio Transcription**: Upload audio files (MP3, WAV, FLAC, OGG, WebM) using Hugging Face Whisper
+- **🤖 AI Meeting Minutes**: Generate structured summaries, decisions, and action items using OpenAI Agent SDK
+- **🌐 Modern Web UI**: Beautiful, responsive Next.js interface with drag & drop file upload
+- **🔧 RESTful API**: FastAPI backend with comprehensive endpoints and validation
+- **📱 Drag & Drop**: Easy file upload with visual feedback and progress tracking
+- **📊 Real-time Progress**: Live processing status updates during transcription
+- **💾 Export Options**: Download minutes as text files or copy to clipboard
+- **🎨 Toast Notifications**: Professional feedback system for all user actions
 
-## API Endpoints
+## 🏗️ Architecture
 
-- `GET /` - API information and available endpoints
-- `GET /health` - Health check and configuration status
-- `POST /transcribe` - Upload audio file and optionally generate meeting minutes
-- `POST /transcribe-only` - Upload audio file for transcription only
-- `POST /generate-minutes` - Generate meeting minutes from existing transcript text
-
-## Quick Start
-
-### 1. Install Dependencies
-
-```bash
-# Using uv (recommended)
-uv sync
-
-# Or using pip
-pip install -r requirements.txt
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Next.js UI   │    │   FastAPI       │    │   External      │
+│   (Frontend)   │◄──►│   (Backend)     │◄──►│   APIs          │
+│                 │    │                 │    │                 │
+│ • File Upload  │    │ • Audio         │    │ • Hugging Face  │
+│ • Progress Bar │    │   Processing    │    │   (Whisper v3)  │
+│ • Results      │    │ • Meeting       │    │ • OpenAI        │
+│   Display      │    │   Minutes Gen   │    │   (Agent SDK)   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### 2. Set Up Environment Variables
+## 🚀 Quick Start
 
-Copy the template and fill in your API keys:
+### Prerequisites
+
+- **Python 3.12+** with `uv` package manager
+- **Node.js 18+** with `npm`
+- **API Keys**: 
+  - Hugging Face token (for audio transcription)
+  - OpenAI API key (for meeting minutes generation)
+
+### 1. Setup Environment
 
 ```bash
+# Copy environment templates
 cp env_template.txt .env
-```
+cp meeing_minutes_agent/env_frontend.txt meeing_minutes_agent/.env.local
 
-Edit `.env` with your actual values:
-
-```env
-# Required API Keys
+# Edit .env with your API keys
 HF_TOKEN=your_huggingface_token_here
 OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional Configuration
-HOST=0.0.0.0
-PORT=8000
-DEBUG=True
 ```
 
-### 3. Run the Server
+### 2. Install Dependencies
 
 ```bash
+# Backend dependencies
+uv sync
+
+# Frontend dependencies
+cd meeing_minutes_agent
+npm install
+cd ..
+```
+
+### 3. Start the Application
+
+#### Option A: One Command (Recommended)
+```bash
+python start_demo.py
+```
+
+#### Option B: Manual Startup
+```bash
+# Terminal 1: Start FastAPI backend
 python main.py
+
+# Terminal 2: Start Next.js frontend
+cd meeing_minutes_agent
+npm run dev
 ```
 
-The server will start on `http://localhost:8000`
+## 🌐 Access Points
 
-### 4. Test the API
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+## 📱 How to Use
+
+### 1. Upload Audio
+- Drag & drop an audio file or click to browse
+- Supported formats: MP3, WAV, FLAC, OGG, WebM
+- File size limit: 50MB (configurable)
+
+### 2. Process Meeting
+- Click "Generate Meeting Minutes"
+- Watch real-time progress updates
+- Processing takes 2-3 minutes for typical meetings
+
+### 3. View Results
+- **Summary**: AI-generated meeting overview
+- **Decisions**: Key decisions made during the meeting
+- **Action Items**: Tasks with owners and due dates
+- **Transcript**: Full audio transcription
+- **Raw Data**: Complete API response for debugging
+
+### 4. Export & Share
+- Download minutes as text file
+- Copy summary to clipboard with visual feedback
+- Process another meeting
+
+## 🔧 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | API information and available endpoints |
+| `/health` | GET | Health check and configuration status |
+| `/transcribe` | POST | Upload audio file and generate meeting minutes |
+| `/transcribe-only` | POST | Upload audio file for transcription only |
+| `/generate-minutes` | POST | Generate meeting minutes from existing transcript text |
+
+## 🛠️ Development
+
+### Backend Development (FastAPI)
 
 ```bash
-python test_api.py
-```
-
-Or visit `http://localhost:8000/docs` for interactive API documentation.
-
-## Usage Examples
-
-### Generate Meeting Minutes from Text
-
-```bash
-curl -X POST "http://localhost:8000/generate-minutes" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "transcript": "Meeting started at 10:00 AM. John discussed project timeline..."
-     }'
-```
-
-### Upload Audio and Generate Minutes
-
-```bash
-curl -X POST "http://localhost:8000/transcribe" \
-     -F "file=@meeting_recording.wav" \
-     -F "generate_minutes=true"
-```
-
-### Transcribe Audio Only
-
-```bash
-curl -X POST "http://localhost:8000/transcribe-only" \
-     -F "file=@meeting_recording.mp3"
-```
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `HF_TOKEN` | Hugging Face API token | - | Yes |
-| `OPENAI_API_KEY` | OpenAI API key | - | Yes |
-| `HOST` | Server host | `0.0.0.0` | No |
-| `PORT` | Server port | `8000` | No |
-| `DEBUG` | Debug mode | `False` | No |
-| `MAX_FILE_SIZE` | Maximum file size (bytes) | `52428800` (50MB) | No |
-| `TRANSCRIPTION_MODEL` | Whisper model to use | `openai/whisper-large-v3` | No |
-
-### Supported Audio Formats
-
-- WAV (.wav)
-- MP3 (.mp3, .mpeg)
-- FLAC (.flac)
-- OGG (.ogg)
-- WebM (.webm)
-
-## Project Structure
-
-```
-meeting-minutes-agent/
-├── main.py              # FastAPI server and endpoints
-├── config.py            # Configuration management
-├── transcription.py     # Audio transcription logic
-├── agent.py            # Meeting minutes generation
-├── test_api.py         # API testing script
-├── env_template.txt    # Environment variables template
-├── pyproject.toml      # Project dependencies
-└── README.md           # This file
-```
-
-## Development
-
-### Running in Development Mode
-
-```bash
+# Run with auto-reload
 DEBUG=True python main.py
+
+# Test API endpoints
+python test_api.py
+
+# Test individual components
+python transcription.py
+python agent.py
+
+# Test transcription function
+python test_transcription.py
 ```
 
-### Testing
+### Frontend Development (Next.js)
 
 ```bash
-# Test the API endpoints
+cd meeing_minutes_agent
+
+# Development mode
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Lint code
+npm run lint
+```
+
+### Adding New Features
+
+1. **New API Endpoints**: Add to `main.py`
+2. **New UI Components**: Add to `meeing_minutes_agent/components/`
+3. **API Integration**: Update `meeing_minutes_agent/lib/api.ts`
+4. **Styling**: Modify `meeing_minutes_agent/app/globals.css`
+
+## 🧪 Testing
+
+### Backend Testing
+```bash
+# Test API endpoints
 python test_api.py
+
+# Test transcription
+python test_transcription.py
 
 # Test individual components
 python transcription.py
 python agent.py
 ```
 
-### Adding New Features
+### Frontend Testing
+```bash
+cd meeing_minutes_agent
+npm run lint
+```
 
-1. **New Endpoints**: Add to `main.py`
-2. **New Models**: Update Pydantic models in respective files
-3. **Configuration**: Add to `config.py`
-4. **Testing**: Update `test_api.py`
+### Integration Testing
+1. Start both servers
+2. Upload an audio file through the UI
+3. Verify transcription and meeting minutes generation
+4. Check all UI tabs display correctly
 
-## Troubleshooting
+## 🚨 Troubleshooting
 
 ### Common Issues
 
-1. **Missing API Keys**: Ensure `HF_TOKEN` and `OPENAI_API_KEY` are set in `.env`
-2. **File Upload Errors**: Check file format and size limits
-3. **Transcription Failures**: Verify Hugging Face token and model availability
-4. **Agent Errors**: Check OpenAI API key and quota
+| Problem | Solution |
+|---------|----------|
+| **Backend won't start** | Check `.env` file and API keys |
+| **Frontend won't start** | Run `npm install` in frontend directory |
+| **Audio processing fails** | Verify Hugging Face token and file format |
+| **Meeting minutes empty** | Check OpenAI API key and quota |
+| **CORS errors** | Ensure backend is running on port 8000 |
+| **Transcription errors** | Check audio file format and size |
 
 ### Debug Mode
 
-Enable debug mode to see detailed error messages:
-
 ```bash
+# Backend debug
 DEBUG=True python main.py
+
+# Frontend debug
+cd meeing_minutes_agent
+npm run dev
 ```
 
-## Next Steps
+### Logs
 
-- [ ] Add authentication and rate limiting
-- [ ] Implement file storage and management
-- [ ] Add support for multiple meeting formats
-- [ ] Create web UI for easier interaction
-- [ ] Add batch processing capabilities
-- [ ] Implement caching for better performance
+- **Backend**: Check terminal output for FastAPI logs
+- **Frontend**: Check browser console for React logs
+- **API Calls**: Monitor Network tab in browser dev tools
 
-## License
+## 🔒 Security & Production
 
-This project is open source. Feel free to contribute and improve!
+### Current State
+- ✅ Basic file validation
+- ✅ File size limits
+- ✅ Error handling
+- ✅ CORS configuration
+- ⚠️ No authentication
+- ⚠️ No rate limiting
+
+### Production Considerations
+- Add user authentication
+- Implement rate limiting
+- Add file storage (S3, etc.)
+- Enable HTTPS
+- Add monitoring and logging
+- Set up CI/CD pipeline
+
+## 📈 Performance
+
+- **Audio Processing**: 2-3 minutes for typical meetings
+- **File Size Limit**: 50MB (configurable)
+- **Supported Formats**: MP3, WAV, FLAC, OGG, WebM
+- **Concurrent Users**: Single instance (add load balancing for scale)
+
+## 📁 Project Structure
+
+```
+meeting-minutes-agent/
+├── main.py                      # FastAPI server and endpoints
+├── config.py                    # Configuration management
+├── transcription.py             # Audio transcription logic
+├── agent.py                     # Meeting minutes generation
+├── test_api.py                  # API testing script
+├── test_transcription.py        # Transcription testing script
+├── start_demo.py                # Complete demo startup script
+├── env_template.txt             # Environment variables template
+├── pyproject.toml               # Python dependencies
+├── meeing_minutes_agent/        # Next.js frontend
+│   ├── app/                     # Next.js app directory
+│   │   ├── page.tsx            # Main application page
+│   │   ├── layout.tsx          # App layout
+│   │   └── globals.css         # Global styles
+│   ├── components/              # UI components
+│   │   └── ui/                 # Shadcn/ui components
+│   ├── lib/                     # Utility functions
+│   │   └── api.ts              # API service layer
+│   ├── package.json             # Node.js dependencies
+│   └── env_frontend.txt        # Frontend environment template
+├── README.md                    # This file
+└── README_DEMO.md              # Comprehensive demo guide
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source. Feel free to use, modify, and distribute.
+
+## 🆘 Support
+
+- **Issues**: Check the troubleshooting section above
+- **API Docs**: Visit http://localhost:8000/docs
+- **Backend Logs**: Check terminal output
+- **Frontend Logs**: Check browser console
+
+---
+
+## 🎯 Demo Checklist
+
+Before presenting:
+
+- [ ] Both servers are running
+- [ ] API keys are configured
+- [ ] Test with a sample audio file
+- [ ] Verify all UI tabs work
+- [ ] Test download functionality
+- [ ] Check error handling
+- [ ] Test copy to clipboard
+- [ ] Prepare sample audio files
+- [ ] Test different audio formats
+
+**Happy Demo-ing! 🚀**
