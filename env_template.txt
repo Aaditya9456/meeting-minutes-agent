@@ -1,0 +1,18 @@
+# Meeting Minutes Agent API Configuration
+# Copy this to .env and fill in your actual values
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8000
+DEBUG=True
+
+# API Keys (Required)
+HF_TOKEN=your_huggingface_token_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Transcription Configuration (Optional - defaults provided)
+TRANSCRIPTION_MODEL=openai/whisper-large-v3
+TRANSCRIPTION_PROVIDER=fal-ai
+
+# File Upload Configuration (Optional - defaults provided)
+MAX_FILE_SIZE=52428800  # 50MB in bytes

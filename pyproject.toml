@@ -1,0 +1,14 @@
+[project]
+name = "meeting-minutes-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.116.1",
+    "huggingface-hub>=0.34.4",
+    "openai-agents>=0.2.10",
+    "python-dotenv>=1.1.1",
+    "uvicorn>=0.35.0",
+    "requests>=2.31.0",
+]
